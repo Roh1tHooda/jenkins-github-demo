@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                bat '"C:\\Users\\LENOVO\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t p5-jenkins-demo:latest .'
+            }
+        }
+
+        stage('Deploy Container') {
+            steps {
+                bat '"C:\\Users\\LENOVO\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" rm -f p5-jenkins-container 2>nul || exit /b 0'
+                bat '"C:\\Users\\LENOVO\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" run -d --name p5-jenkins-container -p 8081:80 p5-jenkins-demo:latest'
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                bat '"C:\\Users\\LENOVO\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" ps --filter "name=p5-jenkins-container"'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'P5 Docker deployment completed successfully.'
+            echo 'Application available at http://localhost:8081'
+        }
+
+        failure {
+            echo 'P5 Docker deployment failed.'
+        }
+    }
+}
