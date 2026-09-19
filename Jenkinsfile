@@ -15,30 +15,26 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        stage('Docker Build') {
             steps {
-                script {
-                    def scannerHome = tool 'SonarScanner'
+                bat '"C:\\Users\\LENOVO\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" build -t p3-jenkins-demo:latest .'
+            }
+        }
 
-                    withSonarQubeEnv('SonarQube') {
-                        bat """
-                            "${scannerHome}\\bin\\sonar-scanner.bat" ^
-                            -Dsonar.projectKey=P2-Sonarqube-demo ^
-                            -Dsonar.projectName=P2-Sonarqube-demo ^
-                            -Dsonar.sources=.
-                        """
-                    }
-                }
+        stage('Verify Docker Image') {
+            steps {
+                bat '"C:\\Users\\LENOVO\\AppData\\Local\\Programs\\DockerDesktop\\resources\\bin\\docker.exe" images p3-jenkins-demo'
             }
         }
     }
 
     post {
         success {
-            echo 'P2 Jenkins Pipeline completed successfully.'
+            echo 'P3 Docker image build completed successfully.'
         }
+
         failure {
-            echo 'P2 Jenkins Pipeline failed.'
+            echo 'P3 Docker image build failed.'
         }
     }
 }
