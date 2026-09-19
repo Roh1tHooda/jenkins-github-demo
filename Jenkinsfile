@@ -17,13 +17,17 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('SonarQube') {
-                    bat '''
-                        "%SONAR_SCANNER_HOME%\\bin\\sonar-scanner.bat" ^
-                        -Dsonar.projectKey=P2-Sonarqube-demo ^
-                        -Dsonar.projectName=P2-Sonarqube-demo ^
-                        -Dsonar.sources=.
-                    '''
+                script {
+                    def scannerHome = tool 'SonarScanner'
+
+                    withSonarQubeEnv('SonarQube') {
+                        bat """
+                            "${scannerHome}\\bin\\sonar-scanner.bat" ^
+                            -Dsonar.projectKey=P2-Sonarqube-demo ^
+                            -Dsonar.projectName=P2-Sonarqube-demo ^
+                            -Dsonar.sources=.
+                        """
+                    }
                 }
             }
         }
